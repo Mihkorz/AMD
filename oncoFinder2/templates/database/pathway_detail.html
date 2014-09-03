@@ -1,0 +1,115 @@
+{% extends "base_profiles.html" %}
+
+{% block title %}{{pathway.name}} | OncoFinder v2.0{% endblock %}
+
+{% block content %}
+<div class="container">
+        <h1>{{pathway.name}}</h1>
+        <div class="text-muted">
+        DataBase: Human Pathways | AMCF = {{pathway.amcf}}
+        </div>
+    <span class='pull-right'>
+       <a href='{{ request.META.HTTP_REFERER }}'><<< back to pathways list</a>
+    </span>
+    <hr/>
+   <div id="tabs">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#fragment-1" data-toggle="tab"><span>Genes </span></a></li>
+        <li><a href="#fragment-2" data-toggle="tab"><span>Nodes and Components</span></a></li>
+        <li><a href="#fragment-3" data-toggle="tab"><span>Graphic Scheme</span></a></li>
+    </ul>
+<div id="tabContent" class="tab-content">
+<div id="fragment-1" class="tab-pane fade in active well">
+Total = {{pathway.gene_set.count}}
+<small>
+<table class='table table-bordered table table-striped' style='width:500px;'>
+<thead >
+  <tr valign="top">
+    <th>#</th>
+    <th>SYMBOL</th>
+    <th>ARR</th>
+  </tr>
+</thead>
+
+    {% for gene in pathway.gene_set.all %}
+      <tr valign="top">
+        <td width='40'>{{ forloop.counter }}</td>
+        <td>{{ gene.name }}</td> 
+        <td>{{gene.arr}}</td>
+      </tr>
+    {% endfor %}
+</table>
+</small>
+</div>
+<div id="fragment-2" class="tab-pane fade well">
+Total = {{pathway.node_set.count}}
+    <div id='nodesAndComponents'>
+    <small>
+    <ul class='pathList'>
+    {% for node in pathway.node_set.all %}
+      <li><b>{{ node.name }}</b> 
+        <ul >
+          {% for component in node.component_set.all %}
+      <li>{{ component.name }}</li>
+          {% endfor %}
+        </ul></li>
+    {% endfor %}
+    </ul>
+    </small>
+    </div>
+</div> 
+<div id="fragment-3" class="tab-pane fade">
+
+
+    <div id="chart2" class="chart">
+              <div class="description">Scheme of "{{pathway.name}}" pathway</div>        
+    </div> 
+
+    <script>
+    var G2 = jsnx.DiGraph();
+
+    G2.add_nodes_from([
+                       {% for node in pathway.node_set.all %}
+                       '{{node.name}}',
+                       {% endfor%}
+                       ], {color: '#ccc', strwidth: 1});
+
+    G2.add_edges_from([
+            {% for dict in dRelations %}
+            
+    		{% for key, value in  dict.items %}
+    		['{{key}}','{{value.0}}', {color: '{{value.1}}'}],
+    		{% endfor %}
+    		{% endfor %}
+    ], {color: "grey"});
+
+    //G2.add_edges_from([[1,9], [9,1]]);
+
+    jsnx.draw(G2, {
+        element: '#chart2', 
+        with_labels: true,
+        'layout_attr': {
+            'charge': -250,
+            'linkDistance': 100
+         },
+         node_style: {
+             fill: function(d) { 
+                 return d.data.color; 
+             },
+             'stroke-width':  function(d){ return d.data.strwidth; }
+         },
+         node_attr: {
+        	 r: 11,
+        	 title: function(d) { return d.label;}
+         },
+        edge_style: { fill: function(d){ return d.data.color; }, 'stroke-width': 5 },
+        label_style: {fill: 'black', 'font-size':'12px', 'text-anchor': 'middle',
+            'dominant-baseline': 'top', 'font-weight': 'bold' },
+        
+    }, true);
+    </script>
+
+</div>
+</div>
+</div></div>
+{% endblock %}

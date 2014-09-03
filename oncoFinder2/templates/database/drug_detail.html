@@ -1,0 +1,91 @@
+{% extends "base_profiles.html" %}
+
+{% block title %}{{ drug.name }} | OncoFinder v2.0{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Information for "{{ drug.name }}" </h1>
+        <span class='pull-right'>
+       <a href='{{ request.META.HTTP_REFERER }}'><<< back to Drugs list</a>
+    </span>
+    <hr/>
+    
+    
+    <div class='well'>
+<table class="table table-bordered table-striped">
+  <tr>
+    <td width="200px">Name:</td>
+    <td>{{drug.name}}</td>
+  </tr>
+  <tr>
+    <td>DataBase:</td>
+    <td>{{drug.db}}</td>
+  </tr>
+  <tr>
+    <td>Type:</td>
+    <td>{{drug.tip}}</td>
+  </tr>
+  <tr>
+    <td>Substance:</td>
+    <td>{{drug.substance}}</td>
+  </tr>
+  <tr>
+    <td>Targets:</td>
+    <td><small>
+        <table class="table table-bordered table-striped">
+        <tr>
+        <th>Target</th>
+        <th>Pathways which include target</th>
+        </tr>
+        {% for target, pathways in drug.pathways_by_target.items %}
+        <tr>
+           <th>{{target}}</th>
+           <td> <small>Total: {{pathways|length}}</small>
+               <ul>
+               {% for path in pathways %}
+               <li><a href="/db/pathways/{{path.name}}/{{path.id}}/" target="_blanc">{{path.name}}</a></li>
+               {%endfor%}
+               </ul>
+           </td>
+        </tr>
+        {%endfor%}
+        </table>
+    </small>
+    </td>
+  </tr>
+  <tr> 
+    <td>morphology:</td>
+    <td>{{drug.morphology}}</td>
+  </tr>
+  <tr>
+    <td>price:</td>
+    <td>{{drug.price}}</td>
+  </tr>
+  <tr>
+    <td>side Effect:</td>
+    <td>{{drug.sideEffect}}</td>
+  </tr>
+  <tr>
+    <td>contraindication:</td>
+    <td>{{drug.contraindication}}</td>
+  </tr>
+  <tr>
+    <td>compatibility:</td>
+    <td>{{drug.compatibility}}</td>
+  </tr>
+  <tr>
+    <td>experience:</td>
+    <td>{{drug.experience}}</td>
+  </tr>
+  <tr>
+    <td>info:</td>
+    <td>{{drug.info}}</td>
+  </tr>
+  </table>
+
+</div>
+    
+    
+</div>
+{%endblock%}    
+    

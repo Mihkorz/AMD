@@ -1,0 +1,131 @@
+{% extends "base_profiles.html" %}
+
+{% block title %}{{ document.get_filename }} | OncoFinder v2.0{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>
+    <span class="glyphicon glyphicon-user"></span>
+    <a href="/user/{{document.project.owner}}">{{document.project.owner}}</a> /
+     <span class="glyphicon glyphicon-folder-open"></span>&nbsp; 
+     <a href="/project/{{document.project}}">{{document.project}}</a> /
+     <span class="glyphicon glyphicon-file"></span>
+     <small><a href="">{{document.get_filename}}</a></small>
+     <span class="text-muted">| <small>{{document.get_doc_type_display}}</small></span> 
+  </h2>
+  <span class="text-muted">
+    Created at: {{document.created_at}}<br/>
+    By: {{document.created_by}}<br/>
+    <span>Samples: </span><span>{{document.sample_num}}</span> | 
+    <span>Norms: </span><span>{{document.norm_num}}</span> | 
+    <span>Rows: </span><span>{{document.row_num}}</span>  
+   </span>
+  {% if document.doc_type == 1 %}
+    <a class="btn btn-default btn-sm pull-right" href="{% url 'core_set_calculation_parameters' document.id %}">
+      <span class="glyphicon glyphicon-play"></span> &nbsp;<b>Start calculation</b>
+     </a>
+   {% else %}
+   <a class="btn btn-default btn-sm pull-right" style="margin-left: 20px;" href="{{MEDIA_URL}}{{document.document}}">
+      <span class="glyphicon glyphicon-download"></span> &nbsp;<b>Download PMS-DS file</b>
+     </a>
+     <a class="btn btn-default btn-sm pull-right" href="{{MEDIA_URL}}{{document.related_doc.input_doc.document}}">
+      <span class="glyphicon glyphicon-download-alt"></span> &nbsp;<b>Download CNR file</b>
+     </a>
+     
+   {% endif %}
+           
+  <hr/>
+  <div>  
+
+  </div>
+{% if document.doc_type == 1%}
+<div class="wrapper1">
+        <div class="upper_scroll"></div>
+       </div>
+       <div class="wrapper2">
+          {{input|safe}}
+       </div>
+{% else %}  
+<!-- Nav tabs -->
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#pms" data-toggle="tab">PMS</a></li>
+  <li><a href="#pms1" data-toggle="tab">PMS1</a></li>
+  {%if DS1 %}
+  <li><a href="#ds1" data-toggle="tab">DS1</a></li>
+  {%endif%}
+  {%if DS2%}
+  <li><a href="#ds2" data-toggle="tab">DS2</a></li>
+  {%endif%}
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane fade in active" id="pms">
+      
+      <div class="wrapper1">
+        <div class="upper_scroll"></div>
+       </div>
+       <div class="wrapper2">
+          {{PMS|safe}}
+       </div>
+  
+  </div>
+  <div class="tab-pane fade" id="pms1">
+  
+     <div class="wrapper1">
+        <div class="upper_scroll"></div>
+       </div>
+       <div class="wrapper2">
+          {{PMS1|safe}}
+       </div>
+  
+  </div>
+  {%if DS1 %}
+  <div class="tab-pane fade" id="ds1">
+  
+      <div class="wrapper1">
+        <div class="upper_scroll"></div>
+       </div>
+       <div class="wrapper2">
+          {{DS1|safe}}
+       </div>
+  
+  </div>
+  {%endif%}
+  {%if DS1 %}
+  <div class="tab-pane fade" id="ds2">
+  
+      <div class="wrapper1">
+        <div class="upper_scroll"></div>
+       </div>
+       <div class="wrapper2">
+          {{DS2|safe}}
+       </div>
+  
+  </div>
+  {%endif%}
+</div>
+{% endif %}
+  
+  
+ 
+  
+</div>
+<script>
+
+$(function(){
+	$("table.dataframe").attr("border", "0").addClass("table table-hover of-table");
+});
+$(function(){
+	$(".upper_scroll").width($(".wrapper2 > table").width());
+	  
+	$(".wrapper1").scroll(function(){ 
+	    $(".wrapper2").scrollLeft($(this).scrollLeft());
+	  });
+	  
+	$(".wrapper2").scroll(function(){
+	    $(".wrapper1").scrollLeft($(this).scrollLeft());
+	  });
+	});
+
+</script>
+{% endblock %}
