@@ -28,9 +28,9 @@ ADMINS = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'oncoFinder2',                      # Or path to database file if using sqlite3.
+        'NAME': 'AMD',                      # Or path to database file if using sqlite3.
         'USER': 'root',                      # Not used with sqlite3.
-        'PASSWORD': 'of_mysql_pass',                  # Not used with sqlite3.
+        'PASSWORD': 'amd_sql_04',                  # Not used with sqlite3.
         'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
@@ -126,7 +126,7 @@ ROOT_URLCONF = 'oncoFinder2.urls'
 WSGI_APPLICATION = 'oncoFinder2.wsgi.application'
 
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_DIR, 'templates')
+    os.path.join(PROJECT_DIR, 'templates'),
 )
 
 INTERNAL_IPS = ('127.0.0.1',)
