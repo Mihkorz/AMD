@@ -1,0 +1,78 @@
+{% extends "base_profiles.html" %}
+
+{% block title %}Pathway database | AMD{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1> <img src='/static/images/laboratory_info.png' style="width: 100px;"/>Biochem DataBase 
+    <div class="btn-group">
+        <button type="button" class="btn btn-active"  >Human Pathways</button>
+        <button type="button" class="btn btn-primary"  onClick="location.href='/mouse/pathways/'" >Mouse Pathways</button>
+        <button type="button" class="btn btn-primary"   onClick="location.href='/metabolism/pathways/'">Metabolism Pathways</button>
+    </div> 
+     </h1>
+    <span class="text-muted">
+    Total ammount = <strong>{{allPathways}}</strong>  pathways
+    </span>
+    
+        <div class="input-group col-lg-4 pull-right">
+        <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+        <input type="text" class="form-control" placeholder="Pathway name" id="pathway_search" >
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button">Go!</button>
+        </span>
+    </div>
+    
+    <hr/>
+  
+   <div class="well" id="path_list_container">
+    <ul class="pathway_list_ul">
+        {% for path in pathways %}
+          <li>
+              <div class="well">
+              <div class="pull-left path_list_picture">
+              <img src='/static/images/pathlist.jpg' alt='{{ path.name }}' title='{{ path.name }}'/>
+              </div>
+                <h5><a href='{{path.name|slugify}}/{{path.id}}'>{{ path.name }}</a></h5>
+                 <div class="text-muted small">
+                 AMCF:  <strong>{{path.amcf}}</strong><br/>
+                 Genes: <strong>{{path.gene_set.count}}</strong> <br/>
+                 Nodes: <strong>{{path.node_set.count}}</strong> <br/>
+                 <!--  Components: <strong>40</strong> <br/>-->
+                 </div>
+                 
+              </div>
+          </li>
+        {% endfor %}
+    </ul>
+    
+     {% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+                <span class="page-current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+   </div>
+</div>
+
+<script>
+$(function(){
+	$("#pathway_search").keyup(function(){ 
+		autocompleteAjaxSearch(this, $("#path_list_container"), "/db/pathways");
+	});
+	
+});
+
+
+</script>
+
+{% endblock %}

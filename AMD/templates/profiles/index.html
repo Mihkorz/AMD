@@ -1,0 +1,168 @@
+{% extends "base_profiles.html" %}
+
+{% block title %}{{ user.username }} | AMD{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="col-md-3" >
+  {% if user_profile.profile %}
+    <img src='{{user_profile.profile.get_picture}}' width="230" /><br/>
+  {% else %}
+  <img src='/static/images/noPicture.jpg' width="230" /><br/>
+  {% endif %}
+    <h2>{{user_profile.username}}</h2>
+    {% if user_profile == user %}
+      <button class="btn btn-default" onClick="location.href='/settings/profile'">
+        <span class="glyphicon glyphicon-pencil"></span> &nbsp;Edit profile
+      </button><br/><br/>
+    {%endif%}
+    <div class="panel panel-default">
+        <div class="panel-heading">Users</div>
+        <div class="panel-body">
+          <ul>
+          {% for user in all_users %}
+          <li><a href="/user/{{user.username}}">{{user.username}}</a></li>
+          {% endfor %}
+          </ul>
+        </div>
+    </div>
+  </div>
+ <div class="col-md-9 " >
+      <div class="panel panel-default">
+        <div class="panel-heading">
+           {% if user_profile == user %}
+           <button class="btn btn-default btn-sm pull-right" onClick="location.href='/project/new'">
+               <span class="glyphicon glyphicon-plus"></span> &nbsp;Create new project
+           </button>
+           {% endif %} 
+           <h3 class="panel-title " style="padding: 6px 0">Projects </h3>
+             
+        </div>
+        <div class="panel-body">
+          <!-- Nav tabs -->
+		  <ul class="nav nav-tabs">
+		    <li class="active"><a href="#my_projects" data-toggle="tab">
+		                       <span class="glyphicon glyphicon-user"></span> My projects</a></li>
+		    <li><a href="#all_projects" data-toggle="tab">
+		        <span class="glyphicon glyphicon-globe"></span> All projects</a></li>
+		    <li><a href="#search_projects" data-toggle="tab">
+		    <span class="glyphicon glyphicon-search"></span> Search</a></li>
+		  </ul>
+		  <div class="tab-content">
+            <div class="tab-pane fade in active" id="my_projects">
+              <ul class="list-group">
+                {% for project in my_projects %}
+                  <li class="list-group-item" id="project{{project.id}}">
+                    <span class="glyphicon glyphicon-folder-open" style="color:#ccc"></span>
+                    &nbsp;&nbsp; <a href="/project/{{project.name}}">{{ project.name }}</a>
+                     <button type="button" class="close pull-right with-tooltip" aria-hidden="true" data-placement="bottom" 
+                             title="Delete" style="margin: 0 20px 0 0 " data-toggle="modal"
+                             project-name="{{project.name}}" project-id="{{project.id}}" 
+                             data-target="#deleteModal">&times;</button>
+                     <span class="badge with-tooltip" data-toggle="tooltip"  data-placement="bottom" 
+                                             title="Documents" style="margin: 0 20px 0 0 ">{{project.get_documents_number}}</span>
+                     <div class="text-muted"><small>Created at: {{project.created_at}}</small></div>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="tab-pane fade" id="all_projects">
+             <ul class="list-group">
+                {% for project in all_projects %}
+                  <li class="list-group-item">
+                    <span class="glyphicon glyphicon-folder-open" style="color:#ccc"></span>
+                    &nbsp;&nbsp; <a href="/project/{{project.name}}">{{ project.name }}</a>
+                     
+                     <span class="badge with-tooltip" data-toggle="tooltip"  data-placement="bottom" 
+                                             title="Documents" style="margin: 0 20px 0 0 ">{{project.get_documents_number}}</span>
+                     <div class="text-muted"><small>Owner: <a href="/user/{{project.owner}}">{{project.owner}}</a></small></div>
+                     <div class="text-muted"><small>Created at: {{project.created_at}}</small></div>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="tab-pane fade" id="search_projects">
+            <h4>Sorry. Currently under construction...</h4>
+            </div>
+          </div> 
+        
+
+        </div>
+      </div>
+ </div>
+  
+ 
+
+</div>
+
+<!-- Delete project Modal -->
+<div class="modal fade bs-example-modal-sm" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Delete project</h4>
+      </div>
+      <div class="modal-body alert alert-danger">
+        Are you sure you want to delete <strong id="project_name">test project</strong> project? <br/>
+        All the documents related to the project will be deleted.
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="confirm_project_delete">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+	<!-- Dialog show event handler -->
+
+<script type="text/javascript">
+  $('#deleteModal').on('show.bs.modal', function (e) {
+
+      $project_name = $(e.relatedTarget).attr('project-name');
+      $(this).find('.modal-body #project_name').text($project_name);
+      $project_id = $(e.relatedTarget).attr('project-id');
+      
+      
+      $(this).find('.modal-footer #confirm_project_delete').data('project_id', $project_id);
+  });
+ 
+  <!-- Form confirm (yes/ok) handler, submits form -->
+  $('#deleteModal').find('.modal-footer #confirm_project_delete').on('click', function(){
+	  
+	  var csrftoken = getCookie('csrftoken');
+
+
+      $.ajaxSetup({
+          crossDomain: false, // obviates need for sameOrigin test
+          beforeSend: function(xhr, settings) {
+              if (!csrfSafeMethod(settings.type)) {
+                  xhr.setRequestHeader("X-CSRFToken", csrftoken);
+              }
+          }
+      });
+      
+      var project_id = $('#deleteModal').find('.modal-footer #confirm_project_delete').data('project_id');
+      
+      $.post('/project/delete/'+project_id+'/', function(data) {
+          if (data.result == "ok"){
+              
+        	  $('#deleteModal').modal('hide');
+        	  $('#project'+project_id).fadeOut('slow');
+        	  
+          } else {
+              // handle error processed by server here
+              alert("smth goes wrong");
+          }
+      }).fail(function() {
+          // handle unexpected error here
+          alert("error");
+      });
+      return false;
+      
+  });
+</script>
+
+
+{% endblock %}

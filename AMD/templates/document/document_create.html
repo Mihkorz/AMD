@@ -1,0 +1,15 @@
+{% extends "base_profiles.html" %}
+
+{% block title %}Error uploading file | AMD{% endblock %}
+
+{% block content %}
+<div class="container">
+<div class="alert alert-danger">
+         <h4>Error!</h4>
+	      Error uploading file! <br/><br/>
+	      
+	      {{form.errors}}
+	      <a href="JavaScript:history.back(0)">Go back >> </a>
+        </div>
+</div>
+{% endblock %}
